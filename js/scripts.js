@@ -2,7 +2,7 @@ const themeSwitcherBtn = document.getElementById("theme-switcher");
 const bodyTag = document.querySelector("body");
 const addBtn = document.getElementById("add-btn");
 const todoInput = document.getElementById("addt");
-
+const ul = document.querySelector(".todos");
 function main() {
   // Theme-Switcher
   themeSwitcherBtn.addEventListener("click", () => {
@@ -18,6 +18,27 @@ function main() {
 
 
   makeTodoElement(JSON.parse(localStorage.getItem("todos")));
+  //dragover 
+  ul.addEventListener('dragover',(e) =>{
+    e.preventDefault();
+   if(e.target.classList.contains("card") && !e.target.classList.contains("dragging")){
+const draggingCard = document.querySelector(".dragging");
+const cards = [...ul.querySelectorAll(".card")];
+const currentPosition = cards.indexOf(draggingCard);
+const newPosition = cards.indexOf(e.target);
+if(currentPosition > newPosition){
+  ul.insertBefore(draggingCard,e.target);
+}else{
+  //we don't have insertAftar we used this method ,this method instead of insertAftar
+  ul.insertBefore(draggingCard,e.target.nextSibling);
+}
+const todos=JSON.parse(localStorage.getItem("todos"));
+const remove = todos.splice(currentPosition,1);
+todos.splice(newPosition,0,remove[0]);
+localStorage.setItem("todos",JSON.stringify(todos));
+   }
+  });
+
 
   //Add Todo In LocalStorage
   addBtn.addEventListener("click", () => {
@@ -68,7 +89,13 @@ function makeTodoElement(todoArray) {
     img.setAttribute("alt", "Clear It");
     item.textContent = todoObject.item;
     //Add EventListener
+card.addEventListener('dragstart',() => {
+card.classList.add("dragging");
+});
+card.addEventListener('dragend',() => {
+card.classList.remove("dragging");
 
+});
     //Set Element by Parent Child
     clearBtn.appendChild(img);
     cbContainer.appendChild(cbInput);
@@ -81,3 +108,5 @@ function makeTodoElement(todoArray) {
 }
 
 document.addEventListener("DOMContentLoaded", main);
+
+
